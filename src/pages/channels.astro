@@ -1,0 +1,137 @@
+---
+import Layout from "./layouts/Layout.astro";
+
+const channels = [
+  { name: "YouTube", handle: "@ogstarboychad", url: "https://youtube.com/@ogstarboychad?si=1ctNV7mjifnYpi9i" },
+  { name: "TikTok", handle: "@tales.from.the.ne0", url: "https://www.tiktok.com/" },
+  { name: "Reddit", handle: "r/NeonWasteland", url: "https://www.reddit.com/r/neonwasteland/s/elfyl2Agxv" },
+  { name: "Discord", handle: "Tales from the Neon Wasteland", url: "https://discord.gg/7R99VBBbM9" },
+  { name: "Instagram", handle: "@tales_from_the_neon_wasteland", url: "https://www.threads.com/@tales_from_the_neon_wasteland?igshid=NTc4MTlwNjQ2YQ==" },
+  { name: "X", handle: "@ogstarboychad", url: "https://x.com/ogstarboychad?s=21" },
+];
+---
+
+<Layout title="Channels // StarboyChad.com">
+  <section class="panel">
+    <p class="kicker">COMMS NODE</p>
+    <h1 class="title">Comms</h1>
+    <p class="intro">
+      External links. Official feeds. Signal only.
+    </p>
+
+    <div class="grid">
+      {channels.map((c) => (
+        <a class="card" href={c.url} target="_blank" rel="noreferrer">
+          <div class="cardLeft">
+            <p class="label">{c.name}</p>
+            <p class="value">{c.handle}</p>
+          </div>
+          <div class="cardRight">
+            <span class="chip">OPEN</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="foot">
+      If a link is down, the signal moved. Check back.
+    </p>
+  </section>
+
+  <style>
+    .panel{
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      border-radius: 22px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .kicker{ font-size:11px; letter-spacing:0.35em; opacity:0.7; text-transform:uppercase; margin:0 0 10px; }
+    .title{ margin:0 0 10px; font-size: 28px; line-height:1.15; }
+    .intro{
+      margin: 0 0 18px;
+      font-size: 16px;
+      line-height: 1.65;
+      opacity: 0.85;
+      max-width: 70ch;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card{
+      grid-column: span 6;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 16px 16px;
+      border-radius: 18px;
+      text-decoration:none;
+      color:#fff;
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.18);
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .card:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(34,211,238,0.25);
+      box-shadow: 0 0 18px rgba(34,211,238,0.08);
+    }
+
+    @media (max-width: 900px){
+      .card{ grid-column: span 12; }
+    }
+
+    .label{
+      margin:0 0 6px;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.75;
+    }
+
+    .value{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      opacity: 0.92;
+    }
+
+    .chip{
+      display:inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.05);
+      opacity: 0.85;
+    }
+
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,0.12);
+      margin: 18px 0 14px;
+    }
+
+    .foot{
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.55;
+    }
+  </style>
+</Layout>

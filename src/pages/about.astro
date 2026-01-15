@@ -1,0 +1,184 @@
+---
+import Layout from "./layouts/Layout.astro";
+
+const dossier = {
+  callsign: "STARBOY CHAD",
+  node: "STARBOYCHAD.COM",
+  operation: "TALES FROM THE NEON WASTELAND",
+  status: "ACTIVE",
+  focus: ["Cyberpunk 2077", "Fallout", "Immersion-First Storytelling"],
+};
+
+const body = `
+I build immersive, story-driven worlds - the kind you can disappear into.
+
+This started as a simple idea: make a playthrough feel like a lived experience instead of a checklist.
+No safe routes. No hand-holding. No random mod stacks.
+Everything is curated to serve atmosphere, cohesion, and narrative weight.
+
+This site is the access point:
+- Episodes and updates for Tales from the Neon Wasteland
+- Nexus collections built as cohesive experiences
+- Original mods in development: locations, interiors, gear, and narrative systems
+
+If you are here for immersion, you are in the right place.
+`;
+---
+
+<Layout title="About // StarboyChad.com">
+  <section class="panel">
+    <p class="kicker">OPERATOR FILE</p>
+    <h1 class="title">About // {dossier.callsign}</h1>
+
+    <div class="grid">
+      <div class="card">
+        <p class="label">NODE</p>
+        <p class="value">{dossier.node}</p>
+      </div>
+      <div class="card">
+        <p class="label">OPERATION</p>
+        <p class="value">{dossier.operation}</p>
+      </div>
+      <div class="card">
+        <p class="label">STATUS</p>
+        <p class="value status">{dossier.status}</p>
+      </div>
+      <div class="card">
+        <p class="label">FOCUS</p>
+        <ul class="tags">
+          {dossier.focus.map((t) => (
+            <li class="tag">{t}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="copy">
+      {body.split("\n").filter(Boolean).map((line) => (
+        <p>{line}</p>
+      ))}
+    </div>
+
+    <div class="ctaRow">
+      <a class="btn cyan" href="/channels">Open Broadcast Node</a>
+      <a class="btn pink" href="/modding">Access Modding Hub</a>
+    </div>
+  </section>
+
+  <style>
+    .panel{
+      border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      border-radius: 22px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .kicker{ font-size:11px; letter-spacing:0.35em; opacity:0.7; text-transform:uppercase; margin:0 0 10px; }
+    .title{ margin:0 0 18px; font-size: 28px; line-height:1.15; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:12px;
+      margin-top: 14px;
+    }
+
+    .card{
+      grid-column: span 6;
+      border:1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
+      border-radius: 16px;
+      padding: 14px 14px;
+    }
+
+    @media (max-width: 720px){
+      .card{ grid-column: span 12; }
+    }
+
+    .label{
+      margin:0 0 6px;
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      opacity: 0.65;
+      text-transform: uppercase;
+    }
+
+    .value{
+      margin:0;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      opacity: 0.92;
+    }
+
+    .status{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(34,211,238,0.35);
+      background: rgba(34,211,238,0.10);
+      box-shadow: 0 0 18px rgba(34,211,238,0.14);
+    }
+
+    .tags{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .tag{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(232,121,249,0.30);
+      background: rgba(232,121,249,0.08);
+      box-shadow: 0 0 18px rgba(232,121,249,0.10);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      opacity: 0.92;
+    }
+
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,0.12);
+      margin: 18px 0 16px;
+    }
+
+    .copy p{
+      margin: 0 0 10px;
+      font-size: 17px;
+      line-height: 1.65;
+      opacity: 0.90;
+      max-width: 70ch;
+    }
+
+    .ctaRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 16px;
+    }
+
+    .btn{
+      display:inline-block;
+      padding:10px 16px;
+      border-radius: 999px;
+      text-decoration:none;
+      color:#fff;
+      font-size:12px;
+      letter-spacing:0.22em;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.05);
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); }
+
+    .cyan{ border-color: rgba(34,211,238,0.35); box-shadow: 0 0 18px rgba(34,211,238,0.16); }
+    .pink{ border-color: rgba(232,121,249,0.35); box-shadow: 0 0 18px rgba(232,121,249,0.14); }
+  </style>
+</Layout>
