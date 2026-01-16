@@ -14,13 +14,11 @@ import Layout from "./layouts/Layout.astro";
     name="contact"
     method="POST"
     action="/contact"
-    data-netlify="true"
+    netlify
     netlify-honeypot="bot-field"
   >
-    <!-- required for Netlify forms -->
     <input type="hidden" name="form-name" value="contact" />
 
-    <!-- honeypot (spam trap) -->
     <p class="hidden">
       <label>
         Don’t fill this out: <input name="bot-field" />
@@ -53,84 +51,43 @@ import Layout from "./layouts/Layout.astro";
     </div>
   </form>
 
+  <!-- Netlify form detection fallback (Astro-safe) -->
+  <form name="contact" netlify hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <textarea name="message"></textarea>
+  </form>
+
   <script>
     const form = document.querySelector("form[name='contact']");
     const sendBtn = document.getElementById("sendBtn");
 
-    // Instant line (fallback / utility)
     function log(ts, msg, cls) {
       if (window.NW_LOG?.addLine) window.NW_LOG.addLine(ts, msg, cls);
     }
 
-    // Typed line (uses Layout’s typeLine if available)
     async function typeLog(ts, msg, cls) {
       if (window.NW_LOG?.typeLine) return await window.NW_LOG.typeLine(ts, msg, cls);
       log(ts, msg, cls);
     }
 
-    async function pause(ms) {
-      if (window.NW_LOG?.sleep) return await window.NW_LOG.sleep(ms);
-      return await new Promise((r) => setTimeout(r, ms));
-    }
-
     function lockForm(locked) {
       if (!form) return;
       const fields = form.querySelectorAll("input, textarea, button");
-      fields.forEach((el) => {
-        el.disabled = locked;
-      });
+      fields.forEach((el) => (el.disabled = locked));
       form.classList.toggle("locked", locked);
     }
 
-    form?.addEventListener("submit", async (e) => {
-      // allow Netlify to receive the form
-
+    form?.addEventListener("submit", async () => {
       lockForm(true);
-
-      // Typed "sending" line
       await typeLog("00:00:xx", "TRANSMISSION: SENDING…", "cyan");
-
-      try {
-        const data = new FormData(form);
-
-        // Netlify expects urlencoded for fetch submissions
-        const params = new URLSearchParams();
-        for (const [k, v] of data.entries()) params.append(k, String(v));
-
-        const res = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: params.toString(),
-        });
-
-        if (!res.ok) throw new Error("Non-OK response");
-
-        await pause(160);
-        await typeLog("00:00:xx", "TRANSMISSION: RECEIVED", "ok");
-        await pause(160);
-        await typeLog("00:00:xx", "ROUTING: TO OPERATOR", "pink");
-        await pause(160);
-        await typeLog("00:00:xx", "COMMS: CLOSED // REFRESH TO REOPEN", "warn");
-      } catch (err) {
-        lockForm(false);
-        await pause(140);
-        await typeLog("00:00:xx", "ERROR: TRANSMISSION FAILED", "err");
-        await pause(140);
-        await typeLog("00:00:xx", "RETRY OR CHECK CONNECTION", "warn");
-      }
+      // native Netlify form POST continues
     });
   </script>
 
   <style>
-    .contactForm{
-      margin-top: 16px;
-      display: grid;
-      gap: 14px;
-      max-width: 720px;
-    }
-
-    label{ display: grid; gap: 8px; }
-
+    .contactForm{ margin-top:16px; display:grid; gap:14px; max-width:720px; }
+    label{ display:grid; gap:8px; }
     .label{
       font-family: var(--mono);
       letter-spacing: 0.22em;
@@ -138,7 +95,6 @@ import Layout from "./layouts/Layout.astro";
       font-size: 11px;
       opacity: 0.7;
     }
-
     input, textarea{
       width: 100%;
       background: rgba(0,0,0,0.35);
@@ -150,22 +106,12 @@ import Layout from "./layouts/Layout.astro";
       letter-spacing: 0.06em;
       outline: none;
     }
-
     input:focus, textarea:focus{
       border-color: rgba(34,211,238,0.28);
       box-shadow: 0 0 0 2px rgba(34,211,238,0.16);
     }
-
     textarea{ resize: vertical; }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-
+    .actions{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:6px; }
     button{
       font-family: var(--mono);
       letter-spacing: 0.22em;
@@ -179,13 +125,11 @@ import Layout from "./layouts/Layout.astro";
       cursor: pointer;
       box-shadow: 0 0 18px rgba(34,211,238,0.10);
     }
-
     button:hover{
       border-color: rgba(232,121,249,0.25);
       background: rgba(232,121,249,0.08);
       box-shadow: 0 0 18px rgba(232,121,249,0.10);
     }
-
     .note{
       font-family: var(--mono);
       font-size: 10px;
@@ -193,17 +137,8 @@ import Layout from "./layouts/Layout.astro";
       text-transform: uppercase;
       opacity: 0.55;
     }
-
     .hidden{ display:none; }
-
-    /* When locked */
-    .contactForm.locked{
-      opacity: 0.7;
-      filter: saturate(0.9);
-    }
-    .contactForm.locked input,
-    .contactForm.locked textarea{
-      cursor: not-allowed;
-    }
+    .contactForm.locked{ opacity:0.7; filter:saturate(0.9); }
+    .contactForm.locked input, .contactForm.locked textarea{ cursor:not-allowed; }
   </style>
 </Layout>
