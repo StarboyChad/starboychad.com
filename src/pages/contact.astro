@@ -13,6 +13,7 @@ import Layout from "./layouts/Layout.astro";
     class="contactForm"
     name="contact"
     method="POST"
+    action="/contact"
     data-netlify="true"
     netlify-honeypot="bot-field"
   >
@@ -82,7 +83,7 @@ import Layout from "./layouts/Layout.astro";
     }
 
     form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
+      // allow Netlify to receive the form
 
       lockForm(true);
 
