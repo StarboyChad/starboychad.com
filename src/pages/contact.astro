@@ -55,7 +55,6 @@ import Layout from "./layouts/Layout.astro";
   </form>
 
   <!-- NETLIFY BUILD-TIME FALLBACK (ASTRO-SAFE) -->
-  <!-- This NEVER shows, but guarantees Netlify detects the form -->
   <form name="contact" netlify hidden>
     <input type="text" name="name" />
     <input type="email" name="email" />
@@ -70,30 +69,61 @@ import Layout from "./layouts/Layout.astro";
     }
 
     async function typeLog(ts, msg, cls) {
-      if (window.NW_LOG?.typeLine) {
-        return await window.NW_LOG.typeLine(ts, msg, cls);
-      }
+      if (window.NW_LOG?.typeLine) return await window.NW_LOG.typeLine(ts, msg, cls);
       log(ts, msg, cls);
+    }
+
+    async function pause(ms) {
+      if (window.NW_LOG?.sleep) return await window.NW_LOG.sleep(ms);
+      return await new Promise((r) => setTimeout(r, ms));
     }
 
     function lockForm(locked) {
       if (!form) return;
 
-      // IMPORTANT:
       // Do NOT disable hidden inputs (Netlify needs form-name)
       const fields = form.querySelectorAll(
         "input:not([type='hidden']), textarea, button"
       );
-
       fields.forEach((el) => (el.disabled = locked));
       form.classList.toggle("locked", locked);
     }
 
     form?.addEventListener("submit", async (e) => {
-      // DO NOT preventDefault — Netlify must receive native POST
+      e.preventDefault();
+
+      // Capture payload BEFORE locking (disabled fields are excluded)
+      const data = new FormData(form);
+
       lockForm(true);
       await typeLog("00:00:xx", "TRANSMISSION: SENDING…", "cyan");
-      // browser continues submission normally
+
+      try {
+        // Netlify expects URL-encoded body for JS submissions
+        const params = new URLSearchParams();
+        for (const [k, v] of data.entries()) params.append(k, String(v));
+
+        const res = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString(),
+        });
+
+        if (!res.ok) throw new Error("Non-OK response");
+
+        await pause(160);
+        await typeLog("00:00:xx", "TRANSMISSION: RECEIVED", "ok");
+        await pause(160);
+        await typeLog("00:00:xx", "ROUTING: TO OPERATOR", "pink");
+        await pause(160);
+        await typeLog("00:00:xx", "COMMS: CLOSED // REFRESH TO REOPEN", "warn");
+      } catch (err) {
+        lockForm(false);
+        await pause(140);
+        await typeLog("00:00:xx", "ERROR: TRANSMISSION FAILED", "err");
+        await pause(140);
+        await typeLog("00:00:xx", "RETRY OR CHECK CONNECTION", "warn");
+      }
     });
   </script>
 
@@ -105,10 +135,7 @@ import Layout from "./layouts/Layout.astro";
       max-width: 720px;
     }
 
-    label {
-      display: grid;
-      gap: 8px;
-    }
+    label { display: grid; gap: 8px; }
 
     .label {
       font-family: var(--mono);
@@ -118,8 +145,7 @@ import Layout from "./layouts/Layout.astro";
       opacity: 0.7;
     }
 
-    input,
-    textarea {
+    input, textarea {
       width: 100%;
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -131,15 +157,12 @@ import Layout from "./layouts/Layout.astro";
       outline: none;
     }
 
-    input:focus,
-    textarea:focus {
+    input:focus, textarea:focus {
       border-color: rgba(34, 211, 238, 0.28);
       box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.16);
     }
 
-    textarea {
-      resize: vertical;
-    }
+    textarea { resize: vertical; }
 
     .actions {
       display: flex;
@@ -160,13 +183,13 @@ import Layout from "./layouts/Layout.astro";
       background: rgba(34, 211, 238, 0.08);
       color: rgba(255, 255, 255, 0.92);
       cursor: pointer;
-      box-shadow: 0 0 18px rgba(34, 211, 238, 0.1);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.10);
     }
 
     button:hover {
       border-color: rgba(232, 121, 249, 0.25);
       background: rgba(232, 121, 249, 0.08);
-      box-shadow: 0 0 18px rgba(232, 121, 249, 0.1);
+      box-shadow: 0 0 18px rgba(232, 121, 249, 0.10);
     }
 
     .note {
@@ -177,9 +200,7 @@ import Layout from "./layouts/Layout.astro";
       opacity: 0.55;
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
     .contactForm.locked {
       opacity: 0.7;
